@@ -1,0 +1,355 @@
+---
+title: "The value of information to the risk averse conservation decision maker"
+author: "William K Morris"
+documentclass: article
+output: 
+  bookdown::pdf_document2:
+    toc: false
+bibliography: "voiRisk.bib"
+biblio-style: "natbib"
+header-includes:
+- \linespread{2}\selectfont
+- \usepackage{booktabs}
+- \usepackage{setspace}
+- \usepackage{caption}
+- \captionsetup{font={stretch=2}}
+- \usepackage{pbox}
+- \usepackage[displaymath,mathlines]{lineno}
+- \linenumbers
+---
+
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE, echo = FALSE, message = FALSE, warning = FALSE, results = "hide"
+)
+```
+
+<!-------------------------------- PLAN ----------------------------------------
+
+{} Abstract
+
+{} Intro
+
+     -- Risk 
+        *** Brief intro to risk aversion in the context of decision making
+
+     -- VOI
+        *** Brief intro to VOI
+        
+     -- Motivation
+        *** Discussion of risk not yet being addressed in the conservation 
+            science literature in the context of VOI
+
+     -- Case study
+        *** Brief intro to the newsboy problem and our adaptation in the context
+            of decision making in the conservation sciences
+
+{} Main
+     -- Payoff matrix
+        *** Explain the case study in greater detail and in the context of the
+            b matrix
+
+     -- Optimal decision under uncertainty as p changes
+
+     -- Critical value of p (p_crit) at which the decision changes
+
+     -- Risk aversity
+
+     -- Change in p_crit with non-linear utility
+
+     -- EUPI
+
+{} Conclusion
+
+------------------------------------------------------------------------------->
+
+# Abstract {-}
+The conservation and natural resource management literature has begun to
+incorporate value of information analyses into its arsenal of decision making
+tools. To date however, these analytical techniques have only been explored from
+a risk-neutral standpoint. Risk profile effects the value of information. Here,
+with a simple illustrative example, we demonstrate how different decision makers with different risk tolerances would value information. Intuitively one might assume that a risk-averse decision maker would always prefer to learn before decision making. But as the example here demonstrates, this will not always be the case. Sometimes new information is less valuable to a risk averse decision maker than it to other more risk tolerant decision makers.
+
+# Introduction {-}
+Risk profile matters when considering the value of information [@Eeckhoudt2000]. Examples of
+valuing information for conservation and natural resource management to date
+consider expected value of information [e.g., @Moore2011; @Runge2011; @Johnson2014a; @Canessa2015; @Maxwell2015]. That is, the value of
+information from the perspective of a risk neutral decision maker. Often,
+risk neutrality may not be an appropriate assumption. Risk aversion is a perhaps
+the more common stance among many conservation decision makers [@Tulloch2015]. Highlighted in particular by the application of the precautionary principle [@Johnson2012; @Falcy2016]. Intuitively, it might seem that risk aversion would lead to a higher value of information as
+"having the facts" first, would be perceived as an inherently less risky
+decision making strategy. However, risk aversion does not automatically
+increase the value of information, depending on the situation it can even 
+decrease the value of information [@Gould1974]. We illustrate with the example below. 
+
+The following presents an adaptation of the "newsboy problem", a simple case-study used in applied statistics, decision theory and economics for over a century [@Edgeworth1888]. @Eeckhoudt2000 first used this model to illustrate the role of risk in information valuing, building on the work of @Gould1974 and @Willinger1989. However, mone of these works have so far had an impact on the conservation sciences, so we present the current work in attempt to package their ideas in a form appropriate for a conservation and natural resource management oriented audience. 
+
+```{r payoff_matrix}
+n  = 10
+n1 = 8 
+b = matrix(c(n1, 5, n1, 15), 2)
+```
+
+# Conservation manager's dilema {-}
+A conservation manager is tasked with managing a population of animals. At
+present the population consists of `r n` breeding pairs and is at it's carrying
+capacity. However, an invasive plant is degrading the habitat of the population
+and by the next year will reduce the breeding population to `r n` pairs. The
+planner has the option to restore the invaded part of the habitat. However the
+outcome of any restoration effort is uncertain. If successful, the carrying
+capacity will increase beyond the current level to `r b[2, 2]` breeding pairs.
+But, there is some probability, $p$, that the restoration efforts will fail to
+increase the amount of suitable habitat, as in the past, not all restorations of
+this kind have worked. If the restoration fails, it will reduce the carrying
+capacity further even than the invasive plant would if left to its own devices,
+leaving only `r b[2, 1]` breeding pairs. Left with this decision the
+conservation planner must consider the payoff matrix below
+(Table \@ref(tab:payoff)).
+
+_Action_   |     $p$     |    1 - $p$
+---------- | ----------- | -----------
+Do nothing | `r b[1, 1]` | `r b[1, 2]`
+Restore    | `r b[2, 1]` | `r b[2, 2]`
+
+Table: (\#tab:payoff) Payoff matrix for conservation planner's decision. When
+the "do nothing" option is taken the planner is guaranteed `r n1` breeding
+pairs. When the planner chooses to restore the invaded habitat there is some
+probability, $p$, that the restoration fails and only `r b[2,1]` breeding pairs
+remain. On the other hand, if the restoration succeeds (which has a
+probability of 1 - $p$), the carrying capacity will rise to `r b[2,2]` breeding
+pairs.
+
+```{r p_crit}
+f = function(p) {
+  b[1, 1] * p + b[1, 2] * (1 - p) - b[2, 1] * p + b[2, 2] * (p - 1)
+}
+p_crit = uniroot(f, 0:1)$root
+```
+
+If the decision maker is risk neutral, then the action they should take is the
+one that maximizes expected value [@Burgman2005]. Fig \@ref(fig:riskev) (top left panel) shows
+that this value is dependent on $p$. When $p$ is between 1 (a 100% chance of
+failure) and `r p_crit` the optimal decision is to leave the invasion to
+proceed. Here `r p_crit` is the probability such that,
+
+\begin{equation}
+  `r b[1, 1]`p + `r b[1, 2]`(1 - p) = `r b[2, 1]`p + `r b[2, 2]`(1 - p)
+  (\#eq:pcrit)
+\end{equation}
+
+In other words, this is the probability of failure where the expected value (the
+sum of the outcomes multiplied their probabilities of happening) of making
+either decision is the same. With a chance of failure of `r p_crit` or higher,
+restoration would always have an expected value,
+$`r b[2, 1]`p + `r b[2, 2]`(1 - p)$, that is less than `r n1`, the expected
+value of not doing anything. If the probability of failure decreases beyond the 
+critical probability then the expected value of restoration will be greater than
+the do nothing option so restoration should be preferred.
+
+(ref:riskev) _Risk tolerance and expected utility. Left panels show the
+relationship between expected utility and the probability, $p$, of restoration
+failing (black lines). The grey shaded regions indicate the optimal strategy
+(restore or do nothing) given $p$. Top left panel describes this scenario for
+a risk-neutral decision maker while the panel underneath applies to the same
+circumstances from the point of view of a risk-averse decision maker. The right
+panel shows the relative perception of values in the payoff matrix (Table
+\@ref(tab:payoff)) for the two different risk tolerances of the left panels.
+Risk aversion effectively values a payoff greater than that seen when employing
+the do-nothing strategy, less than would risk neutrality. The effect is to
+decrease the tolerance to the risk of restoration failure, moving the value of
+$p$ at which "do nothing" is optimal, to the left._
+
+```{r riskev, fig.cap = "(ref:riskev)"}
+u = function(x) ifelse(x < n1, x, n1 + (x - n1) / 2)
+
+ev = function (p) {
+  leave   = b[1, 1] * p +  b[1, 2] * (1 - p)
+  restore = b[2, 1] * p +  b[2, 2] * (1 - p)
+  pmax(leave, restore)
+}
+
+ev_ra = function (p) {
+  b = u(b)
+  leave   = b[1, 1] * p +  b[1, 2] * (1 - p)
+  restore = b[2, 1] * p +  b[2, 2] * (1 - p)
+  pmax(leave, restore)
+}
+
+p_crit2 = (u(n1) - u(b[2, 2])) / (u(b[2, 1]) - u(b[2, 2]))
+
+local({
+  par(mar = c(0, 1, 0, 1), oma = c(5, 3, 1, 1))
+  layout(matrix(c(1, 2, 3, 3), 2))
+
+  par(mar = c(0, 4, 1, 1))
+  plot.new()
+  plot.window(xlim = 0:1, ylim = c(0, 15), yaxs = "i", xaxs = "i")
+  polygon(c(0, 0,  p_crit,  p_crit), c(0, 15, 15, 0), col = "grey75", border = NA)
+  polygon(c( p_crit,  p_crit, 1, 1), c(0, 15, 15, 0), col = "grey90", border = NA)
+  curve(ev, 0, 1, add = TRUE, lty = 3)
+  axis(2, seq(0, 15, 5), las = 1)
+  legend(0, 18, legend = c("Restore", "Do nothing"),
+         fill = c("grey75", "grey90"), bty = "n", xpd = NA, horiz = TRUE)
+  box()
+
+  plot.new()
+  plot.window(xlim = 0:1, ylim = c(0, 15), yaxs = "i", xaxs = "i")
+  polygon(c(0, 0, p_crit2, p_crit2), c(0, 15, 15, 0), col = "grey75", border = NA)
+  polygon(c(p_crit2, p_crit2, 1, 1), c(0, 15, 15, 0), col = "grey90", border = NA)
+  curve(ev_ra, 0, 1, add = TRUE)
+  axis(2, seq(0, 15, 5), las = 1)
+  mtext("Expected utility", 2, 0, outer = TRUE, xpd = NA)
+  axis(1)
+  mtext(expression(italic(p)), 1, 3)
+  box()
+
+  curve(I, 0, 15, las = 1, lty = 3, xlab = "", ylab = "")
+  curve(u, add = TRUE)
+  legend(0, 15, c("Risk neutrality", "Risk aversity"), lty = c(3, 1), bty = "n")
+  mtext("Value", 1, 3)
+  mtext("Utility", 2, 2)
+})
+```
+
+## Expected value of information {-}
+Now suppose that before making a decision, the planner can find out with
+certainty whether or not the restoration will be successful (by testing the soil
+for example). The value of this knowledge, for the risk-neutral decision maker, 
+is the expected value of perfect information (EVPI). The EVPI is the difference
+between the expected value under uncertainty (the line in the top left panel of
+figure \@ref(fig:riskev)) and the expected value with perfect information 
+(EVWPI). We have already calculated the expected value under uncertainty (also 
+known as the the expected value with original information, EVWOI) above. The
+EVWPI also varies with, $p$, and is calculated by considering what action would
+be taken under each circumstance of knowing if restoration would fail or not,
+and then multiplying the outcome of each scenario by the probability of success
+and failure respectively (i.e., in this case $\mathrm{EVPWI} = 8p + 15(1-p)$).
+
+Figure \@ref(fig:eupi) (dashed line) shows the relationship between EVPI and $p$.
+Here we see that EVPI is greatest at the point were the decision switches from 
+restore to do nothing. This makes intuitive sense, as information should be most
+valuable when you are most uncertain about what to do. Either side of this
+critical probability, the EVPI decreases as the decision maker is more sure of 
+what the outcome of the decision will be, until such a point that they are
+completely certain ($p = 0$ or $p = 1$). At this point the value of information
+is zero. One way to interpret the EVPI is as the upper limit on what should be 
+spent on acquiring any new information to help with decision making. For example,
+if the conservation manager knew that an increase in carrying capacity of one
+breeding pair was worth $10,000 (perhaps based on what they or other managers had
+spent to achieve this outcome in the past) then they could not justify spending
+any money on information unless $p$ was between $\frac{1}{3}$ and $\frac{6}{7}$.
+As outside this range the EVPI is less than one breeding pair.
+
+## Risk averse decision making {-}
+Now we will address the same problem from the perspective of a risk-averse
+manager. But first we must define what we mean by risk-aversion. Risk-aversion
+indicates a decision maker's intolerance to variation in payoff and a propensity
+to prefer relatively certain, small returns, to uncertain returns that could be
+high or low [@Burgman2005]. Risk-neutral decision makers, on the other hand, are insensitive to
+this risk, the variation in payoff, and will only take the expected values of a
+set of options into account when making a decision.
+
+As should be clear by now, risk-averse decision makers perceive value
+differently to risk-neutralists. To account for this difference, theorists use
+the concepts of utility and expected utility in place of value and expected
+value. For a risk-neutral decision maker value is linearly related to utility,
+but for a risk-averse decision maker the relationship is concave and diminishing
+(Figure \@ref(fig:riskev) right panel). Meaning that for the risk averse moving 
+from relatively low value to a somewhat higher value is perceived as a greater
+performance increase than incrementing up from an already high value by the same
+amount. For example, the right panel figure \@ref(fig:riskev) indicates that for 
+a risk-averse decision maker, going from 10 to 15 breeding pairs is perceived as 
+being only half the performance increase as going from 0 to 5.
+
+The bottom left panel of figure \@ref(fig:riskev) shows the effect of a
+risk-averse stance on the relationship between expected utility (in the risk 
+neutral case above, value is equivalent to utility) and the probability of
+restoration failure. First, across the range of $p$ where restoration is the 
+preferred option the expected utility is reduced, as even when likely, the
+potential increase in carrying capacity is perceived as less important than it
+is under risk neutrality. And second, the range of $p$ over which restoration is
+preferred is now smaller because the point where its expected utility is equal to
+the do nothing option, is now lower. In effect, the risk-averse decision maker
+must be more sure of a positive outcome of restoration to switch from the sure 
+bet of doing nothing, ensuring a moderate outcome and avoiding the
+possibility of enduring the worst.
+
+## Risk aversion and the expected utility of information {-}
+As discussed above, to be risk-averse is to be intolerant of uncertainty. As is
+shown in figure \@ref(fig:riskev) the risk averse decision maker prefers to do
+nothing unless they are more sure of restoration success than would the
+risk-neutral decision maker. Therefore, one might assume that information, which
+would decrease the uncertainty in decision making, would be more valuable to the 
+risk averse decision maker than to the risk-neutralist. However as we  show
+below this is not always the case and depending on the initial level of
+uncertainty the opposite can sometimes be true. In a previous section we
+demonstrated how to calculate the EVPI. Now, after shifting from measuring
+performance as value to measuring performance as utility, we can simply apply
+the same method to calculate an expected utility of perfect information (EUPI)
+instead. However, these two quantities, the EUPI for a risk-averse decision
+maker and the EVPI for a risk-neutral decision maker, are not equivalent as the 
+relationship between them is non-linear.
+
+To overcome the non-equivalence of EUPI and EVPI due to their non-linear relationship we must formulate them in a slightly different way. Where before we discussed EVPI as the magnitude of performance increase moving from uncertainty to certainty, to express EUPI on the same scale we will conceptualise both quantities as a "willingness to pay". That is, what loss should a decision maker be willing to suffer to reduce uncertainty in order to maximise their expected value or utility.
+
+So, for any given utility function, $U$ (including the linear function of risk neutral), the EUPI for conservation decision at hand is defined by,
+
+\begin{equation}
+\begin{split}
+&\textrm{if}\;\;p \leq p_\textit{crit},\;\;\textrm{then}\;\;pU(8 - \mathrm{EUPI}) + (1 - p)U(15 - \mathrm{EUPI}) = pU(5) + (1 - p)U(15) \\
+&\textrm{if}\;\;p \geq p_\textit{crit},\;\;\textrm{then}\;\;pU(8 - \mathrm{EUPI}) + (1 - p)U(15 - \mathrm{EUPI}) = U(8)\\
+& \textrm{where}\;\; p_\textit{crit} = \frac{U(8) - U(15)}{U(5) - U(15)}
+(\#eq:eupi)
+\end{split}
+\end{equation}
+
+
+In other words, the expected utility of getting the best return minus the maximum cost of learning what action will lead to the best outcome (which is the EUPI), needs to equal the expected utility of making the decision without knowing what outcome the actions will lead to (the expected utility under uncertainty). When $p \leq p_\textit{crit}$ the right hand side of this equality is the expected utility of restoration. Whereas, when  $p \geq p_\textit{crit}$ then the expected utility having eliminated uncertainty must equal the utility of doing nothing.
+
+Figure \@ref(fig:eupi) shows the results of solving equation \@ref(eq:eupi) over the range of $p$ for the risk neutral and risk averse utility functions of figure \@ref(fig:riskev). What should be immediately clear is that an assumption that information is always more valuable to the risk averse is incorrect. For this example there is a range of $p$ where this is the case. When $p$ is below or near the point where the risk averse decision maker would choose to restore under uncertainty, information is relatively more important to the risk averse than it is to the risk neutral decision maker. For higher values of $p$ however, the preferences are reversed and information is more important to the risk neutral decision maker than the risk averse.
+
+So why would a decision maker that is averse to uncertainty be less willing to resolve uncertainty than a decision maker who is more tolerant of uncertainty? Before addressing this let's first turn to the more intuitive case where risk-aversion leads to greater utility of information. When the probability of restoration failure is low both decision makers take the gamble that restoration will give them a better expected outcome than doing nothing. Being sensitive to the uncertainty about the success of restoration the risk-averse decision maker is more willing to endure a loss resolve that uncertainty. However, this state of mind does not apply when the probability of restoration failure is high. In this scenario the decision makers, without extra information, will not take the gamble and prefer the known outcome of doing nothing over the risk of failing after trying to restore. At this point the gamble now becomes the act of paying to learn about the probability of success. If a decision maker spends resources on learning and it turns out that restoration will definitely fail then they have lost the gamble as they were already in position where, given their uncertainty, they would do nothing. Therefore, given the risk-averse decision makers preference for certain outcomes over gambling the utility of information from their point of view is lower than it is for the risk-neutral decision maker. 
+
+(ref:eupi) _The expected utility of information. Lines indicate the relationship between the expected utility of information and probability of restoration failing. Dotted line is for a risk-neutral decision maker while the black line indicates the same relationship for their risk averse counterpart. In both cases the expected utility of information peaks at the point along the x-axis where the optimal strategy switches from "restore" to "do nothing"._
+
+```{r eupi, fig.cap = "(ref:eupi)"}
+evpi = function (p) {
+  b  = matrix(c(8, 5, 8, 15), 2)
+  leave   = b[1, 1] * p +  b[1, 2] * (1 - p)
+  restore = b[2, 1] * p +  b[2, 2] * (1 - p)
+  evwoi   = pmax(leave, restore)
+
+  evwpi   = b[1, 1] * p + b[2, 2] * (1 - p)
+  evwpi - evwoi
+}
+
+eupi = function(p) {
+ sapply(p,
+   function(p) {
+     if (p <= (u(8) - u(15)) / (u(5) - u(15))) {
+       f = function(x) {
+           (p * u(8 - x) + (1 - p) * u(15 - x)) -
+           (p * u(5) + (1 - p) * u(15))
+       }
+     } else {
+       f = function(x) {
+           (p * u(8 - x) + (1 - p) * u(15 - x)) -
+           u(8)
+       }
+     }
+     uniroot(f, c(0, 8))$root
+   }
+ )
+}
+
+par(mar = c(5, 5, 1, 1), oma = c(1, 0, 0, 0))
+curve(evpi, 0, 1, las = 1, yaxs = "i", xaxs = "i", bty = "n", ylim = c(0, 2.5),
+      xlab = expression(italic(p)), ylab = "Expected utility of information", lty = 3)
+curve(eupi, 0, 1, add = TRUE)
+legend(0, 2.5, c("Risk neutrality", "Risk aversity"), lty = c(3, 1), bty = "n")
+```
+
+# Conclusion {-}
+So to reiterate, risk tolerance matters to decision making and the value of information. Though the risk averse are relatively intolerant to uncertainty, it does not automatically follow that elimating uncertainty with new information will always be mor favourable to the risk averse than to the more risk tolerant. Sometimes in fact, the opposite is true. Sometimes the act of seeking new information becomes the risky decision itself and in such circumstance a risk averse conservation decision maker will show less preference for learning than would a risk-neutralist. As a consequence risk profile cannot be taken for granted when valuing information for conservation and resource management. Careful assessment of risk tolerance is needed to know for sure how much to invest in learning before making decisions.
+
+# References {-}
