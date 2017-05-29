@@ -77,7 +77,8 @@ In other words, this is the probability of failure where the expected value (the
 (ref:riskev) Risk tolerance and expected utility. Left panels show the relationship between expected utility and the probability, $p$, of restoration failing (black lines). The grey shaded regions indicate the optimal strategy (restore or do nothing) given $p$. Top left panel describes this scenario for a risk-neutral decision maker while the panel underneath applies to the point of view of a risk-averse decision maker. The right panel shows the relative perception of values (utility) in the payoff matrix (Table \@ref(tab:payoff)) for the two different risk tolerances of the left panels. Risk aversion effectively values a payoff greater than that seen when employing the do-nothing strategy, less than would risk neutrality. The effect is to decrease the tolerance to the risk of restoration failure, moving the value of $p_\textit{crit}$, the point at which "do nothing" is optimal, to the left.
 
 ```{r riskev, fig.cap = "(ref:riskev)"}
-u = function(x) ifelse(x < n1, x, n1 + (x - n1) / 2)
+#u = function(x) ifelse(x < n1, x, n1 + (x - n1) / 2)
+u = function(x) 3.5 + 2 * log(x)
 
 ev = function (p) {
   leave   = b[1, 1] * p +  b[1, 2] * (1 - p)
@@ -200,7 +201,7 @@ eupi = function(p) {
 par(mar = c(5, 5, 1, 1), oma = c(1, 0, 0, 0))
 curve(evpi, 0, 1, las = 1, yaxs = "i", xaxs = "i", bty = "n", ylim = c(0, 2.5),
       xlab = expression(italic(p)), ylab = "Expected utility of information", lty = 3)
-curve(eupi, 0, 1, add = TRUE)
+curve(eupi, 0.001, 1, add = TRUE)
 legend(0, 2.5, c("Risk neutral", "Risk averse"), lty = c(3, 1), bty = "n")
 ```
 
